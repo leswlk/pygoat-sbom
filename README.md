@@ -1,6 +1,6 @@
 # PyGoat-SBOM
 
-As an addendum to the [pygoat-github-actions]<https://github.com/leswlk/pygoat-sbom>
+As an addendum to the [PyGoat DevSecOps](https://github.com/leswlk/pygoat-github-actions)
 project I've built, I created a workflow to generate an SBOM utilizing CycloneDX. Using OSV-Scanner, I can explore the vulnerabilities if needed.
 
 ## Tools used
