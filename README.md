@@ -38,9 +38,71 @@ Depending on the role/team within an organization, SBOMs has information for eve
 ## Instructions
 
 ### Create CycloneDX Workflow
- - Create the workflow within GitHub Actions and generate
+ - Create the workflow within GitHub Actions and run it:
+ 
+```
+# .github/workflows/CycloneDX-SBOM.yml
+name: Generate CycloneDX SBOM
 
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
 
-### Run Workflow
+jobs:
+  build-sbom:
+    runs-on: ubuntu-latest
+
+    # Needed for GitHub’s dependency-submission API later
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      # Grab the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Python the same way PyGoat runs
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'          # match runtime
+          cache: pip
+
+      # Install project deps & the OWASP SBOM generator
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install cyclonedx-bom            # OWASP-maintained CLI  [oai_citation:0‡PyPI](https://pypi.org/project/cyclonedx-bom/)
+
+      # Build the CycloneDX SBOM (JSON)
+      - name: Generate SBOM
+        run: |
+          cyclonedx-py requirements --output-file sbom.cdx.json
+
+      # -------------- STORAGE / DISTRIBUTION OPTIONS --------------
+
+      # Give engineers something to download
+      - name: Upload as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pygoat-sbom
+          path: sbom.cdx.json
+          retention-days: 30      # tunable
+```
+The workflow automatically generates a SBOM everytime code is pushed to the master branch. Every build includes a up-to-date CycloneDX SBOM file to provide visibility into all python dependencies, versions, and potential supply chain risks.
+
+![Screenshot](./screenshots/sbomworkflow.jpg)
+
 ### Download SBOM
-### View and investigate vulnerabilities
+
+![Screenshot](./screenshots/sbomdownload.jpg)
+
+### View and investigate vulnerabilities with OSV-Scanner
+
+- Open a terminal/command prompt and run OSV-Scanner and explore the vulnerabilities
+
+![Screenshot](./screenshots/osvscanofsbom.jpg)
+
+
