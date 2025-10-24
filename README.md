@@ -38,6 +38,9 @@ Depending on the role/team within an organization, SBOMs has information for eve
 ## Instructions
 
 ### Create CycloneDX Workflow
+ - Create the workflow within GitHub Actions and generate
+
+
 ### Run Workflow
 ### Download SBOM
 ### View and investigate vulnerabilities
